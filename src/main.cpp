@@ -103,15 +103,6 @@ void setup()
     ESPTools.wifiAutoConnect();
 
     Serial.println("");
-    /*WiFiManager wifiManager;
-    if (!wifiManager.autoConnect())
-    {
-        Serial.println("failed to connect and hit timeout");
-        delay(3000);
-        ESP.restart();
-    }*/
-
-    Serial.println("");
     Serial.print("Connected to ");
     Serial.println(WiFi.SSID());
     Serial.print("IP address: ");
@@ -135,11 +126,10 @@ void setup()
 
 void loop()
 {
-    //dnsServer.processNextRequest();
     server.handleClient();
-    /*if (!client.connected() && ESPTools.config["mqtt_server"] != "")
+    if (!client.connected() && ESPTools.config["mqtt_server"] != "")
     {
         reconnect();
     }
-    client.loop();*/
+    client.loop();
 }
