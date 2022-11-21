@@ -29,21 +29,17 @@ void reconnect()
     if (client.connect(clientId.c_str()))
     {
         Serial.println("connected");
-        if (std::strcmp(ESPTools.config["mqtt_topic_relay_1"].c_str(), "") != 0)
-        {
-            client.subscribe(ESPTools.config["mqtt_topic_relay_1"].c_str());
-        }
-        if (std::strcmp(ESPTools.config["mqtt_topic_relay_2"].c_str(), "") != 0)
-        {
-            client.subscribe(ESPTools.config["mqtt_topic_relay_2"].c_str());
-        }
-        if (std::strcmp(ESPTools.config["mqtt_topic_relay_3"].c_str(), "") != 0)
-        {
-            client.subscribe(ESPTools.config["mqtt_topic_relay_3"].c_str());
-        }
-        if (std::strcmp(ESPTools.config["mqtt_topic_relay_4"].c_str(), "") != 0)
-        {
-            client.subscribe(ESPTools.config["mqtt_topic_relay_4"].c_str());
+        String topics[4] = {
+            ESPTools.config["mqtt_topic_relay_1"],
+            ESPTools.config["mqtt_topic_relay_2"],
+            ESPTools.config["mqtt_topic_relay_3"],
+            ESPTools.config["mqtt_topic_relay_4"]
+        };
+
+        for (String topic : topics) {
+            if (!topic.equals("")) {
+                client.subscribe(topic.c_str());
+            }
         }
     }
     else
@@ -72,21 +68,21 @@ void onMessage(char *topic, byte *payload, unsigned int length)
     DynamicJsonDocument doc(1024);
     deserializeJson(doc, (char *)payload);
 
-    if (std::strcmp(ESPTools.config["mqtt_topic_relay_1"].c_str(), topic) == 0)
+    if (ESPTools.config["mqtt_topic_relay_1"].equals(topic))
     {
         switchRelay(RELAY_1, doc["state"]);
     }
-    if (std::strcmp(ESPTools.config["mqtt_topic_relay_2"].c_str(), topic) == 0)
+    if (ESPTools.config["mqtt_topic_relay_2"].equals(topic))
     {
         switchRelay(RELAY_2, doc["state"]);
     }
-    if (std::strcmp(ESPTools.config["mqtt_topic_relay_3"].c_str(), topic) == 0)
+    if (ESPTools.config["mqtt_topic_relay_3"].equals(topic))
     {
         switchRelay(RELAY_3, doc["state"]);
     }
-    if (std::strcmp(ESPTools.config["mqtt_topic_relay_4"].c_str(), topic) == 0)
+    if (ESPTools.config["mqtt_topic_relay_4"].equals(topic))
     {
-        switchRelay(RELAY_4, doc["state"]);
+        switchRelay(RELAY_4, !doc["state"]);
     }
 }
 
@@ -112,6 +108,7 @@ void setup()
     pinMode(RELAY_2, OUTPUT);
     pinMode(RELAY_3, OUTPUT);
     pinMode(RELAY_4, OUTPUT);
+    digitalWrite(RELAY_4, HIGH);
 
     ESPTools.begin(&server);
     ESPTools.wifiAutoConnect();
