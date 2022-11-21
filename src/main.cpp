@@ -29,10 +29,22 @@ void reconnect()
     if (client.connect(clientId.c_str()))
     {
         Serial.println("connected");
-        client.subscribe(ESPTools.config["mqtt_topic_relay_1"].c_str());
-        client.subscribe(ESPTools.config["mqtt_topic_relay_2"].c_str());
-        client.subscribe(ESPTools.config["mqtt_topic_relay_3"].c_str());
-        client.subscribe(ESPTools.config["mqtt_topic_relay_4"].c_str());
+        if (std::strcmp(ESPTools.config["mqtt_topic_relay_1"].c_str(), "") != 0)
+        {
+            client.subscribe(ESPTools.config["mqtt_topic_relay_1"].c_str());
+        }
+        if (std::strcmp(ESPTools.config["mqtt_topic_relay_2"].c_str(), "") != 0)
+        {
+            client.subscribe(ESPTools.config["mqtt_topic_relay_2"].c_str());
+        }
+        if (std::strcmp(ESPTools.config["mqtt_topic_relay_3"].c_str(), "") != 0)
+        {
+            client.subscribe(ESPTools.config["mqtt_topic_relay_3"].c_str());
+        }
+        if (std::strcmp(ESPTools.config["mqtt_topic_relay_4"].c_str(), "") != 0)
+        {
+            client.subscribe(ESPTools.config["mqtt_topic_relay_4"].c_str());
+        }
     }
     else
     {
@@ -43,10 +55,14 @@ void reconnect()
     }
 }
 
-void switchRelay(int pin, bool state) {
-    if (state) {
+void switchRelay(int pin, bool state)
+{
+    if (state)
+    {
         digitalWrite(pin, HIGH);
-    } else {
+    }
+    else
+    {
         digitalWrite(pin, LOW);
     }
 }
@@ -56,16 +72,20 @@ void onMessage(char *topic, byte *payload, unsigned int length)
     DynamicJsonDocument doc(1024);
     deserializeJson(doc, (char *)payload);
 
-    if (std::strcmp(ESPTools.config["mqtt_topic_relay_1"].c_str(), topic) == 0) {
+    if (std::strcmp(ESPTools.config["mqtt_topic_relay_1"].c_str(), topic) == 0)
+    {
         switchRelay(RELAY_1, doc["state"]);
-    } 
-    if (std::strcmp(ESPTools.config["mqtt_topic_relay_2"].c_str(), topic) == 0) {
+    }
+    if (std::strcmp(ESPTools.config["mqtt_topic_relay_2"].c_str(), topic) == 0)
+    {
         switchRelay(RELAY_2, doc["state"]);
-    } 
-    if (std::strcmp(ESPTools.config["mqtt_topic_relay_3"].c_str(), topic) == 0) {
+    }
+    if (std::strcmp(ESPTools.config["mqtt_topic_relay_3"].c_str(), topic) == 0)
+    {
         switchRelay(RELAY_3, doc["state"]);
     }
-    if (std::strcmp(ESPTools.config["mqtt_topic_relay_4"].c_str(), topic) == 0) {
+    if (std::strcmp(ESPTools.config["mqtt_topic_relay_4"].c_str(), topic) == 0)
+    {
         switchRelay(RELAY_4, doc["state"]);
     }
 }
@@ -109,11 +129,11 @@ void setup()
     Serial.println(WiFi.localIP());
 
     server.on("/reset_wifi", resetWifi);
-    server.on("/restart", [&]() {
+    server.on("/restart", [&]()
+              {
         server.send(200, "text/plain", "Ok");
         delay(500);
-        ESP.restart();
-    });
+        ESP.restart(); });
 
     // OTA Stuff
     httpUpdater.setup(&server);
