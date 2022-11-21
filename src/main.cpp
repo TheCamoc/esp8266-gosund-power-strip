@@ -114,19 +114,12 @@ void setup()
     pinMode(RELAY_4, OUTPUT);
 
     ESPTools.begin(&server);
-    ESPTools.addConfigString("hostname");
+    ESPTools.wifiAutoConnect();
     ESPTools.addConfigString("mqtt_server");
     ESPTools.addConfigString("mqtt_topic_relay_1");
     ESPTools.addConfigString("mqtt_topic_relay_2");
     ESPTools.addConfigString("mqtt_topic_relay_3");
     ESPTools.addConfigString("mqtt_topic_relay_4");
-    ESPTools.wifiAutoConnect();
-
-    Serial.println("");
-    Serial.print("Connected to ");
-    Serial.println(WiFi.SSID());
-    Serial.print("IP address: ");
-    Serial.println(WiFi.localIP());
 
     server.on("/reset_wifi", resetWifi);
     server.on("/restart", [&]()
