@@ -2,15 +2,11 @@
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
 #include <ESP8266WebServer.h>
-#include <WiFiManager.h>
 #include <PubSubClient.h>
-#include <ESP8266mDNS.h>
-#include <ESP8266HTTPUpdateServer.h>
 #include <ESPTools.h>
 #include <ArduinoJson.h>
 
 ESP8266WebServer server(80);
-ESP8266HTTPUpdateServer httpUpdater;
 WiFiClient wifiClient;
 PubSubClient client(wifiClient);
 
@@ -86,21 +82,10 @@ void onMessage(char *topic, byte *payload, unsigned int length)
     }
 }
 
-void resetWifi()
-{
-    server.send(200, "text/plain", "done");
-    delay(100);
-    WiFiManager wifiManager;
-    wifiManager.resetSettings();
-    delay(5000);
-    ESP.restart();
-}
-
 void setup()
 {
     // WiFi, WebServer and OTA setup
     Serial.begin(115200);
-    Serial.println();
     delay(1000);
 
     // Setup Pins
@@ -111,6 +96,7 @@ void setup()
     digitalWrite(RELAY_4, HIGH);
 
     ESPTools.begin(&server);
+    ESPTools.setupHTTPUpdates();
     ESPTools.wifiAutoConnect();
     ESPTools.addConfigString("mqtt_server");
     ESPTools.addConfigString("mqtt_topic_relay_1");
@@ -118,15 +104,12 @@ void setup()
     ESPTools.addConfigString("mqtt_topic_relay_3");
     ESPTools.addConfigString("mqtt_topic_relay_4");
 
-    server.on("/reset_wifi", resetWifi);
     server.on("/restart", [&]()
               {
         server.send(200, "text/plain", "Ok");
         delay(500);
         ESP.restart(); });
 
-    // OTA Stuff
-    httpUpdater.setup(&server);
     server.begin();
 
     // Setup MQTT
