@@ -120,7 +120,7 @@ void setup()
 void loop()
 {
     server.handleClient();
-    if (!client.connected() && ESPTools.config["mqtt_server"] != "")
+    if (!client.connected() && ESPTools.config["mqtt_server"] != "" && WiFi.status() == WL_CONNECTED)
     {
         reconnect();
     }
