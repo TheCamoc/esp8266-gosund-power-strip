@@ -104,12 +104,6 @@ void setup()
     ESPTools.addConfigString("mqtt_topic_relay_3");
     ESPTools.addConfigString("mqtt_topic_relay_4");
 
-    server.on("/restart", [&]()
-              {
-        server.send(200, "text/plain", "Ok");
-        delay(500);
-        ESP.restart(); });
-
     server.begin();
 
     // Setup MQTT
